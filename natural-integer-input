@@ -1,0 +1,96 @@
+<template>
+  <input type="text" ref="text" class="natural-number-input"
+    :value="innerValue"
+    @keydown = "keydownHandle"
+    @keyup.enter = "enterHandle"
+    @input="inputHandle"
+    @blur="blurHandle"
+    >
+</template>
+
+<script>
+  export default {
+    name: 'positive-integer-input',
+    props: {
+      value: {
+        type: Number,
+        default: 1
+      },
+      max: {
+        type: Number,
+        default: Infinity
+      },
+      step: {
+        type: Number,
+        default: 1
+      },
+    },
+    data () {
+      return {
+        innerValue: 1
+      }
+    },
+    watch: {
+      value: {
+        immediate: true,
+        handler (val) {
+          this.innerValue = val
+        }
+      },
+    },
+    methods: {
+      keydownHandle (e) {
+        const key = e.keyCode
+        // 数字键 || 数字键 || 退格键_8 || 控制键(End_35 Home_36 左_37 上_38 右_39 下_40)
+        const rule = (key >= 48 && key <= 57) || (key >= 96 && key <= 105) || [8, 35, 36, 37, 39].indexOf(key) > -1
+        if (!rule) {
+          e.preventDefault()
+        }
+
+        let val = parseInt(e.target.value) || this.innerValue
+        if (key === 38 && val < this.max) { // 上
+          e.target.value = Math.min(val + this.step, this.max)
+        } else if (key === 40 && val > 1) { // 下
+          e.target.value = Math.max(val - this.step, 1)
+        }
+      },
+      enterHandle (e) {
+        const val = parseInt(e.target.value) || this.innerValue
+        e.target.value = val
+        this.innerValue = val
+        this.$emit('on-enter', val)
+      },
+      inputHandle (e) {
+        if (e.target.value.length) {
+          let val = parseInt(e.target.value) || 1
+          val = Math.max(Math.min(val, this.max), 1)
+          e.target.value = val
+        }
+      },
+      blurHandle (e) {
+        e.target.value = this.innerValue
+      },
+    },
+  }
+</script>
+
+<style lang="less">
+  .natural-number-input {
+    @height: 26px;
+    border: none;
+    outline: none;
+    border: 1px solid #c1c1c1;
+    height: @height;
+    line-height: @height;
+    color: #333;
+    border-radius: 4px;
+    width: 3.1em;
+    padding: 0 5px;
+    text-align: center;
+    ime-mode: disabled;
+
+    &:focus {
+      border-color: #2d8cf0;
+    }
+  }
+</style>
