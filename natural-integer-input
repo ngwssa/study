@@ -41,12 +41,11 @@
     methods: {
       keydownHandle (e) {
         const key = e.keyCode
-        // 数字键 || 数字键 || 退格键_8 || 控制键(End_35 Home_36 左_37 上_38 右_39 下_40)
-        const rule = (key >= 48 && key <= 57) || (key >= 96 && key <= 105) || [8, 35, 36, 37, 39].indexOf(key) > -1
+        // 数字键 || 数字键 || 退格键_8 || delete键_46 || 控制键(End_35 Home_36 左_37 上_38 右_39 下_40) || 复制 || 粘贴
+        const rule = (key >= 48 && key <= 57) || (key >= 96 && key <= 105) || [8, 46, 35, 36, 37, 39].indexOf(key) > -1 || (e.ctrlKey && key === 67) || (e.ctrlKey && key === 86)
         if (!rule) {
           e.preventDefault()
         }
-
         let val = parseInt(e.target.value) || this.innerValue
         if (key === 38 && val < this.max) { // 上
           e.target.value = Math.min(val + this.step, this.max)
